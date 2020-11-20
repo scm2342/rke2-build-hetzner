@@ -6,6 +6,10 @@ variable "clustername" {
   type        = string
   description = "name of the cluster"
 }
+variable "domains" {
+  type        = list
+  description = "list of cluster domains"
+}
 variable "master_count" {
   default     = 3
   description = "Count of rke2 master servers"

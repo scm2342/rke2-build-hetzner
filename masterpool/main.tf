@@ -15,7 +15,8 @@ resource "hcloud_server" "master" {
     rke2_cluster_secret = var.rke2_cluster_secret,
     lb_address = var.lb_ip
     master_index = count.index,
-    rke2_version = var.rke2_version
+    rke2_version = var.rke2_version,
+    domains = var.domains
   })
 }
 

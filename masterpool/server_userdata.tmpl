@@ -22,7 +22,11 @@ write_files:
     %{ if master_index != 0 }
     server: https://${lb_address}:9345
     %{ endif }
-    tls-san: ${lb_address}
+    tls-san:
+      - ${lb_address}
+     %{ for domain in domains }
+      - ${domain}
+     %{ endfor }
     token: ${rke2_cluster_secret}
 - path: /opt/rke2/run_rke2.sh
   permissions: "0755"
