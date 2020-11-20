@@ -1,0 +1,38 @@
+#cloud-config
+%{ if length(extra_ssh_keys) > 0 }
+ssh_authorized_keys:
+%{ for ssh_key in extra_ssh_keys }
+- ${ssh_key}
+%{ endfor }
+%{ endif }
+write_files:
+- path: /etc/rancher/rke2/config.yaml
+  permissions: "0600"
+  owner: root:root
+  content: |
+    server: https://${lb_address}:9345
+    token: ${rke2_cluster_secret}
+- path: /opt/rke2/run_rke2.sh
+  permissions: "0755"
+  owner: root:root
+  content: |
+    #!/bin/bash
+    curl -fsSL https://raw.githubusercontent.com/rancher/rke2/master/install.sh --output install.sh
+    chmod u+x install.sh
+    INSTALL_RKE2_METHOD='tar' INSTALL_RKE2_TYPE=agent INSTALL_RKE2_VERSION=${rke2_version} ./install.sh
+    systemctl enable rke2-agent
+    systemctl start rke2-agent
+    sleep 20
+    for bin in $(readlink -f /var/lib/rancher/rke2/bin/*); do
+      ln -sf $bin /usr/local/bin/$(basename $bin)
+    done
+runcmd:
+- apt-get update
+- apt-get install -y iptables git vim software-properties-common resolvconf linux-headers-$(uname -r)
+- echo "nameserver 1.1.1.1" > /etc/resolvconf/resolv.conf.d/tail
+- echo "RateLimitIntervalSec=0" >> /etc/systemd/journald.conf
+- echo "RateLimitBurst=0" >> /etc/systemd/journald.conf
+- systemctl restart systemd-journald.service
+- systemctl start resolvconf
+- /opt/rke2/run_rke2.sh
+
