@@ -1,18 +1,17 @@
-variable "server_count" {
+variable "agent_count" {
   default     = 3
-  description = "Count of rke2 master servers"
+  description = "Count of rke2 agent servers"
 }
-variable "extra_ssh_keys" {
-  type        = list
-  default     = []
-  description = "Extra ssh keys to inject into Rancher instances"
+variable "agent_type" {
+  type        = string
+  default     = "cx21"
+  description = "machine type to use for the agents"
 }
 variable "rke2_cluster_secret" {
   type        = string
   description = "Cluster secret for rke2 cluster registration"
 }
-variable "rke2_version" {
+variable "clustername" {
   type        = string
-  default     = ""
-  description = "Version of rke2 to install"
+  description = "name of the cluster"
 }

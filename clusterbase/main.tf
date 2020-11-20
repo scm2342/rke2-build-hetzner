@@ -1,25 +1,25 @@
 resource "hcloud_network" "clustername" {
-  name = "clustername"
-  ip_range = "10.0.0.0/8"
+  name = var.clustername
+  ip_range = var.network
 }
 
 resource "hcloud_network_subnet" "clustername" {
   network_id = hcloud_network.clustername.id
   type = "cloud"
-  network_zone = "eu-central"
-  ip_range   = "10.0.0.0/24"
+  network_zone = var.networkzone
+  ip_range   = var.subnetwork
 }
 
 resource "hcloud_load_balancer" "clustername_controlplane" {
   name = "clustername_controlplane"
-  load_balancer_type = "lb11"
-  network_zone = "eu-central"
+  load_balancer_type = var.lb_type
+  network_zone = var.networkzone
 }
 
 resource "hcloud_load_balancer_network" "clustername" {
   load_balancer_id = hcloud_load_balancer.clustername_controlplane.id
   network_id = hcloud_network.clustername.id
-  ip = "10.0.0.2"
+  ip = var.internalbalancerip
 }
 
 resource "hcloud_load_balancer_service" "clustername_joiner" {
@@ -51,6 +51,6 @@ resource "hcloud_load_balancer_service" "clustername_kublet" {
 resource "hcloud_load_balancer_target" "clustername_controlplane" {
   type             = "label_selector"
   load_balancer_id = hcloud_load_balancer.clustername_controlplane.id
-  label_selector   = "cluster=clustername,master=true"
+  label_selector   = "cluster=${var.clustername},master=true"
   use_private_ip   = true
 }
