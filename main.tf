@@ -12,6 +12,9 @@ module "masterpool" {
   ssh_keys = [hcloud_ssh_key.root.name]
   network_id = module.clusterbase.network_id
   domains = [var.domain]
+  lb_id = module.clusterbase.lb_id
+  api_token = var.api_token
+  master_count = 3
 }
 module "agentpool" {
   source = "./agentpool"
@@ -21,4 +24,5 @@ module "agentpool" {
   lb_ip = module.clusterbase.lb_ip
   ssh_keys = [hcloud_ssh_key.root.name]
   network_id = module.clusterbase.network_id
+  agent_count = 3
 }

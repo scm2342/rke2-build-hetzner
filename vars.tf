@@ -10,3 +10,7 @@ variable "clustername" {
   type        = string
   description = "name of the cluster"
 }
+variable "api_token" {
+  type        = string
+  description = "hetzner api token with read permission to read lb state"
+}

@@ -16,7 +16,10 @@ resource "hcloud_server" "master" {
     lb_address = var.lb_ip
     master_index = count.index,
     rke2_version = var.rke2_version,
-    domains = var.domains
+    domains = var.domains,
+    clustername = var.clustername,
+    lb_id = var.lb_id,
+    api_token = var.api_token
   })
 }
 

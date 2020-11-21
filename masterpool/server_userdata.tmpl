@@ -7,13 +7,14 @@ ssh_authorized_keys:
 %{ endif }
 runcmd:
 - apt-get update
-- apt-get install -y iptables git telnet vim software-properties-common resolvconf linux-headers-$(uname -r)
+- apt-get install -y iptables git telnet vim software-properties-common resolvconf linux-headers-$(uname -r) jq curl
 - echo "nameserver 1.1.1.1" > /etc/resolvconf/resolv.conf.d/tail
 - echo "RateLimitIntervalSec=0" >> /etc/systemd/journald.conf
 - echo "RateLimitBurst=0" >> /etc/systemd/journald.conf
 - systemctl restart systemd-journald.service
 - systemctl start resolvconf
 - /opt/rke2/run_rke2.sh
+- rm /opt/rke2/run_rke2.sh
 write_files:
 - path: /etc/rancher/rke2/config.yaml
   permissions: "0600"
@@ -34,8 +35,16 @@ write_files:
   content: |
     #!/bin/bash
     %{ if master_index != 0 }
+    function one_healthy {
+      res=$(jq -r '.load_balancer.targets | .[] | select(.label_selector.selector == "cluster=${clustername},master=true") | .targets | any(.health_status | all(.status == "healthy"))')
+      test "$res" = "true"
+    }
+    function get_lb {
+      LB="$(echo ${lb_id} | cut -d \- -f 1)"
+      curl -sSL -H "Authorization: Bearer ${api_token}" "https://api.hetzner.cloud/v1/load_balancers/$LB"
+    }
     while true; do
-      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/${lb_address}/9345'
+      get_lb | one_healthy
       if [ "$?" == 0 ]; then
         break
       fi
