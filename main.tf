@@ -24,5 +24,7 @@ module "agentpool" {
   lb_ip = module.clusterbase.lb_ip
   ssh_keys = [hcloud_ssh_key.root.name]
   network_id = module.clusterbase.network_id
+  lb_id = module.clusterbase.lb_id
+  api_token = var.api_token
   agent_count = 3
 }

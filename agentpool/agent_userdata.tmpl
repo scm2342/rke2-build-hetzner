@@ -17,6 +17,22 @@ write_files:
   owner: root:root
   content: |
     #!/bin/bash
+    function one_healthy {
+      res=$(jq -r '.load_balancer.targets | .[] | select(.label_selector.selector == "cluster=${clustername},master=true") | .targets | any(.health_status | all(.status == "healthy"))')
+      test "$res" = "true"
+    }
+    function get_lb {
+      LB="$(echo ${lb_id} | cut -d \- -f 1)"
+      curl -sSL -H "Authorization: Bearer ${api_token}" "https://api.hetzner.cloud/v1/load_balancers/$LB"
+    }
+    while true; do
+      get_lb | one_healthy
+      if [ "$?" == 0 ]; then
+        break
+      fi
+    echo "master is not ready yet"
+    sleep 10
+    done
     curl -fsSL https://raw.githubusercontent.com/rancher/rke2/master/install.sh --output install.sh
     chmod u+x install.sh
     INSTALL_RKE2_METHOD='tar' INSTALL_RKE2_TYPE=agent INSTALL_RKE2_VERSION=${rke2_version} ./install.sh

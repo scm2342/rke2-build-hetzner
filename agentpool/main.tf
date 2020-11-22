@@ -16,6 +16,9 @@ resource "hcloud_server" "agent" {
     lb_address = var.lb_ip
     agent_index = count.index,
     rke2_version = var.rke2_version
+    clustername = var.clustername,
+    lb_id = var.lb_id,
+    api_token = var.api_token
   })
 }
 

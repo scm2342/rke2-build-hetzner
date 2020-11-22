@@ -38,7 +38,15 @@ variable "lb_ip" {
   type        = string
   description = "ip of the lb to use to connect agents"
 }
+variable "lb_id" {
+  type        = string
+  description = "id of the load balancer to connect masters"
+}
 variable "network_id" {
   type        = string
   description = "network id to put servers into"
+}
+variable "api_token" {
+  type        = string
+  description = "hetzner api token with read permission to read lb state"
 }
