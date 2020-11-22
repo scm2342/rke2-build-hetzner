@@ -7,7 +7,7 @@ ssh_authorized_keys:
 %{ endif }
 runcmd:
 - apt-get update
-- apt-get install -y iptables git telnet vim software-properties-common resolvconf linux-headers-$(uname -r) jq curl
+- apt-get install -y iptables git telnet vim software-properties-common resolvconf linux-headers-$(uname -r) jq curl open-iscsi
 - echo "nameserver 1.1.1.1" > /etc/resolvconf/resolv.conf.d/tail
 - echo "RateLimitIntervalSec=0" >> /etc/systemd/journald.conf
 - echo "RateLimitBurst=0" >> /etc/systemd/journald.conf
