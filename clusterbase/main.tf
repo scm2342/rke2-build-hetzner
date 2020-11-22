@@ -31,7 +31,8 @@ resource "hcloud_load_balancer_service" "clustername_joiner" {
     protocol = "tcp"
     port = 9345
     interval = 5
-    timeout = 5
+    timeout = 2
+    retries = 5
   }
 }
 
@@ -44,7 +45,8 @@ resource "hcloud_load_balancer_service" "clustername_kublet" {
     protocol = "tcp"
     port = 6443
     interval = 5
-    timeout = 5
+    timeout = 2
+    retries = 2
   }
 }
 
