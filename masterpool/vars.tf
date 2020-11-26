@@ -42,6 +42,14 @@ variable "lb_ip" {
   type        = string
   description = "ip of the lb to use to connect masters"
 }
+variable "lb_external_v4" {
+  type        = string
+  description = "external v4 ip of the lb"
+}
+variable "lb_external_v6" {
+  type        = string
+  description = "external v4 ip of the lb"
+}
 variable "lb_id" {
   type        = string
   description = "id of the load balancer to connect masters"

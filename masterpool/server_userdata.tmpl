@@ -25,6 +25,8 @@ write_files:
     %{ endif }
     tls-san:
       - ${lb_address}
+      - ${lb_external_v4}
+      - ${lb_external_v6}
      %{ for domain in domains }
       - ${domain}
      %{ endfor }

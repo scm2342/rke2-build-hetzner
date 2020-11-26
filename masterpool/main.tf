@@ -13,7 +13,9 @@ resource "hcloud_server" "master" {
   user_data = templatefile("${path.module}/server_userdata.tmpl", {
     extra_ssh_keys = var.extra_ssh_keys,
     rke2_cluster_secret = var.rke2_cluster_secret,
-    lb_address = var.lb_ip
+    lb_address = var.lb_ip,
+    lb_external_v4 = var.lb_external_v4,
+    lb_external_v6 = var.lb_external_v6,
     master_index = count.index,
     rke2_version = var.rke2_version,
     domains = var.domains,
