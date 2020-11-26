@@ -35,21 +35,20 @@ write_files:
   content: |
     #!/bin/bash
     %{ if master_index != 0 }
-    function one_healthy {
-      res=$(jq -r '.load_balancer.targets | .[] | select(.label_selector.selector == "cluster=${clustername},master=true") | .targets | any(.health_status | all(.status == "healthy"))')
-      test "$res" = "true"
+    function num_healthy {
+      jq -r '[.load_balancer.targets | .[] | select(.label_selector.selector == "cluster=${clustername},master=true") | .targets | .[] | select(.health_status | all(.status == "healthy"))] | length'
     }
     function get_lb {
       LB="$(echo ${lb_id} | cut -d \- -f 1)"
       curl -sSL -H "Authorization: Bearer ${api_token}" "https://api.hetzner.cloud/v1/load_balancers/$LB"
     }
     while true; do
-      get_lb | one_healthy
-      if [ "$?" == 0 ]; then
+      res="$(get_lb | num_healthy)"
+      if [ "$?" == 0 ] && [ "$res" -ge ${master_index} ]; then
         break
       fi
-    echo "master is not ready yet"
-    sleep 10
+      echo "not enought masters ready to join next ($res / ${master_index})"
+      sleep 10
     done
     %{ endif }
     curl -fsSL https://raw.githubusercontent.com/rancher/rke2/master/install.sh --output install.sh
